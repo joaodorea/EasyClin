@@ -1,0 +1,5 @@
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #f3f5f6;
+    border-width: 0;
+}
