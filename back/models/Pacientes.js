@@ -11,6 +11,10 @@ var pacSchema = new mongoose.Schema({
   cidadeEstado: String,
   telefone1: String,
   telefone2: String,
+  sexo: {
+    type: String,
+    enum: ["Masculino", "Feminino", "Outro"]
+  },
   cpf: {
     type: String,
     unique: true

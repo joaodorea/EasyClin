@@ -1,8 +1,10 @@
 <template>
   <div class="container">
     <div class="list-group">
-      <h2>Consultas
+      <h2>
+        Consultas
         <router-link
+          v-if="!isMedico"
           tag="small"
           to="consultas/nova"
           class="text-primary float-right"
@@ -11,25 +13,6 @@
         >Marcar nova</router-link>
       </h2>
       <div class="accordion" id="consultasAccordion">
-        <!-- <div v-for="c in list" :key="c.id" class="card">
-            <div class="card-header" :id="c._id"  data-toggle="collapse" :data-target="'#collapse' + c._id" aria-expanded="true" :aria-controls="'collapse' + c._id"  title="Clique para expandir">
-              <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1"><small>Paciente:</small> {{ c.paciente.name }}</h5>
-                <h6>{{ c.dia }}</h6>
-              </div>
-              <div class="d-flex w-100 justify-content-between">
-                <p class="mb-1"><small>Médico:</small> {{ c.medico.name }}</p>
-                <small>{{ c.hora }}</small>
-              </div>
-            </div>
-            <div :id="'collapse' + c._id" class="collapse" :aria-labelledby="c._id" data-parent="#consultasAccordion">
-              <div class="card-body">
-                <h4>{{ c.local }}</h4>
-                <p>{{ c.desc }}</p>
-                <router-link tag="small" :to="'consultas/' + c._id" class="btn btn-outline-secondary btn-sm">Editar</router-link>
-              </div>
-            </div>
-        </div>-->
         <table class="consultas table table-hover">
           <thead>
             <tr>
@@ -50,27 +33,42 @@
         </table>
       </div>
     </div>
+    <my-pagination @clicked="updateList" :total="total"></my-pagination>
   </div>
 </template>
 <script>
 import { mapGetters, mapActions } from "vuex";
+import myPagination from "./../shared/Pagination.vue";
 
 export default {
   data() {
     return {};
   },
+  components: {
+    myPagination
+  },
   computed: {
     ...mapGetters({
-      list: "consultas/list"
-    })
+      list: "consultas/list",
+      total: "consultas/total",
+      user: "account/user"
+    }),
+    isMedico() {
+      return this.user.profile == "Médico";
+    }
   },
   methods: {
     ...mapActions({
       getList: "consultas/getList"
-    })
+    }),
+    async updateList() {
+      this.loading = true;
+      await this.getList(this.$route.query);
+      this.loading = false;
+    }
   },
   mounted() {
-    this.getList();
+    this.getList(this.$route.query);
   }
 };
 </script>

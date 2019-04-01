@@ -1,22 +1,10 @@
 <template>
   <div class="container">
     <div class="list-group">
-      <h2>Lista de medicamentos
+      <h2>
+        Lista de medicamentos
         <router-link tag="small" to="medicamentos/novo" class="text-primary float-right">Adicionar</router-link>
       </h2>
-      <!-- <router-link
-        tag="a"
-        :to="'/medicamentos/' + m._id"
-        href="#"
-        class="list-group-item list-group-item-action d-flex"
-        v-for="m in list"
-        :key="m._id"
-      >
-        <h5 class="flex-fill">{{ m.name }}</h5>
-        <small>({{ m.fab }})</small>
-        <p>{{ m.nameFab }}</p>
-        <i @click="canRemove(m._id, m.name)" class="fas fa-trash-alt text-danger"></i>
-      </router-link> -->
     </div>
     <table class="table table-hover">
       <thead>
@@ -24,33 +12,40 @@
           <th scope="col">Nome</th>
           <th scope="col">Nome de fábrica</th>
           <th scope="col">Fabricante</th>
-          <th scope="col" width="50">remove</th>
+          <th scope="col" width="50">Deletar</th>
         </tr>
       </thead>
       <tbody>
-        <router-link tag="tr" v-for="m in list" :key="m._id" :to="'/medicamentos/' + m._id">
-          <td>{{ m.name }}</td>
-          <td>{{ m.fab }}</td>
-          <td>{{ m.nameFab }}</td>
-          <td class="text-center" width="50"><i @click="canRemove(m._id, m.name)" class="fas fa-trash-alt text-danger"></i></td>
-        </router-link>
+        <tr v-for="m in list" :key="m._id">
+          <router-link tag="td" :to="'/medicamentos/' + m._id">{{ m.name }}</router-link>
+          <router-link tag="td" :to="'/medicamentos/' + m._id">{{ m.fab }}</router-link>
+          <router-link tag="td" :to="'/medicamentos/' + m._id">{{ m.nameFab }}</router-link>
+          <td class="text-center" width="50">
+            <i @click="canRemove(m._id, m.name)" class="fas fa-trash-alt text-danger"></i>
+          </td>
+        </tr>
       </tbody>
     </table>
     <router-view></router-view>
+    <my-pagination @clicked="updateList" :total="total"></my-pagination>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import myPagination from "./../shared/Pagination.vue";
 
 export default {
   data() {
     return {};
   },
-  components: {},
+  components: {
+    myPagination
+  },
   computed: {
     ...mapGetters({
-      list: "medicamentos/list"
+      list: "medicamentos/list",
+      total: "medicamentos/total"
     })
   },
   methods: {
@@ -58,6 +53,11 @@ export default {
       medList: "medicamentos/getList",
       remove: "medicamentos/remove"
     }),
+    async updateList() {
+      this.loading = true;
+      await this.medList(this.$route.query);
+      this.loading = false;
+    },
     canRemove(id, name) {
       if (confirm("Tem certeza que deseja excluir " + name + "?")) {
         this.remove(id);
@@ -65,7 +65,7 @@ export default {
     }
   },
   mounted() {
-    this.medList();
+    this.medList(this.$route.query);
   }
 };
 </script>
@@ -77,15 +77,13 @@ h2 small {
     text-decoration: underline;
   }
 }
-</style>
-<style scoped>
 
 i {
   background-color: white;
   border-radius: 50%;
   transition: all 0.2s;
-  /* padding: 10px; */
-  /* right: -30px; */
-  /* position: absolute; */
+}
+td {
+  cursor: pointer;
 }
 </style>

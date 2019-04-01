@@ -21,7 +21,7 @@ const actions = {
         return res;
     },
     getListReceitas: async function ({ commit }, consulta) {
-        const res = await api.getAll(consulta + '/receitas');
+        const res = await api.getAllPath(consulta + '/receitas');
         commit("setList", res.data);
         return res.data;
     },

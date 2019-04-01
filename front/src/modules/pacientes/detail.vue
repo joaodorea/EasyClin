@@ -6,8 +6,9 @@
           <h2 :class="{invisible: !user.paciente.name}">{{ user.paciente.name || "Paciente" }}</h2>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="inputEmail4">Nome</label>
+              <label for="inputEmail4">Nome *</label>
               <input
+                required
                 :readonly="!isEditting"
                 type="text"
                 class="form-control"
@@ -16,7 +17,7 @@
               >
             </div>
             <div class="form-group col-md-6">
-              <label for="inputEmail">E-mail</label>
+              <label for="inputEmail">E-mail *</label>
               <input
                 :readonly="!isEditting"
                 type="email"
@@ -26,20 +27,41 @@
               >
             </div>
           </div>
-          <div class="form-group">
-            <label for="inputCpf">CPF</label>
-            <input
-              :readonly="!isEditting"
-              type="text"
-              class="form-control"
-              id="inputCpf"
-              v-model="user.paciente.cpf"
+          <div class="form-row">
+            <div
+              class="form-group col-md-6"
+              title="Não é possível modificar o cpf depois de cadastrado"
             >
+              <label for="inputCpf">RG / CPF *</label>
+              <input
+                required
+                v-mask="['###.###.###-##']"
+                readonly
+                type="text"
+                class="form-control"
+                id="inputCpf"
+                v-model="user.paciente.cpf"
+              >
+            </div>
+            <div class="form-group col-md-6">
+              <label for="inputSexo">Sexo</label>
+              <select
+                class="form-control"
+                v-model="user.paciente.sexo"
+                name="inputSexo"
+                id="inputSexo"
+              >
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="inputAddress">Endereço</label>
+              <label for="inputAddress">Endereço *</label>
               <input
+                required
                 :readonly="!isEditting"
                 type="text"
                 class="form-control"
@@ -70,8 +92,10 @@
               >
             </div>
             <div class="form-group col-md-3">
-              <label for="inputTelefone1">Telefone 1</label>
+              <label for="inputTelefone1">Telefone *</label>
               <input
+                required
+                v-mask="['(##) ####-####', '(##) #####-####']"
                 :readonly="!isEditting"
                 type="tel"
                 class="form-control"
@@ -80,8 +104,9 @@
               >
             </div>
             <div class="form-group col-md-3">
-              <label for="inputTelefone2">Telefone 2</label>
+              <label for="inputTelefone2">Telefone responsável</label>
               <input
+                v-mask="['(##) ####-####', '(##) #####-####']"
                 :readonly="!isEditting"
                 type="tel"
                 class="form-control"
@@ -113,17 +138,31 @@
             </div>
             <div class="form-group col-md-12">
               <label for="inputHistClinico">Histórico Clinico</label>
-              <textarea class="form-control" id="inputHistClinico" cols="5" rows="3"></textarea>
+              <textarea
+                v-model="user.paciente.historicoClinico"
+                class="form-control"
+                id="inputHistClinico"
+                cols="5"
+                rows="3"
+              ></textarea>
             </div>
           </div>
           <div class="form-row">
+            <small class="text-muted mb-3">* Campos obrigatórios</small>
+          </div>
+          <div class="form-row">
+            <button
+              type="button"
+              id="delete"
+              class="btn btn-outline-danger"
+              @click="deletePaciente(user.paciente._id)"
+            >Deletar</button>
             <button type="submit" class="btn btn-primary ml-auto">Salvar</button>
-            <button type="button" id="delete" @click="deletePaciente(user.paciente._id)" hidden></button>
           </div>
         </form>
       </div>
     </div>
-    <div v-if="user.consultas.length" class="row mt-3">
+    <div v-if="user.consultas.length" class="row mt-5">
       <div class="col-md-12 mb-3">
         <h3>Históricos:</h3>
       </div>
@@ -160,15 +199,12 @@
       <div class="col-md-4">
         <h4>Medicamentos</h4>
         <div v-if="user.receitas.length">
-          <ul class="list-group mb-3"
-              v-for="receita in user.receitas"
-              :key="receita._id">
-              {{ receita.diaCadastro | moment("DD MMMM") }}
-            <li
-              :key="r._id"
-              v-for="r in receita.medicamentos"
-              class="list-group-item"
-            >{{ r.medicamento.name }} - <small class="text-muted">{{ r.descricao }}</small></li>
+          <ul class="list-group mb-3" v-for="receita in user.receitas" :key="receita._id">
+            <h5>{{ receita.diaCadastro | moment("DD MMMM") }}</h5>
+            <li>
+              {{ receita.medicamento.name }} -
+              <small class="text-muted">{{ receita.descricao }}</small>
+            </li>
           </ul>
         </div>
         <p v-else>Nenhuma médicamento</p>
@@ -178,18 +214,19 @@
 </template>
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
+import { mask } from "vue-the-mask";
+
 export default {
   data() {
     return {
-      isEditting: this.$route.name == "NovoPaciente",
-      isCreating: this.$route.name == "NovoPaciente",
+      isEditting: true,
       pac: {}
     };
   },
+  directives: { mask },
   methods: {
     ...mapActions({
       get: "pacientes/getOne",
-      add: "pacientes/add",
       del: "pacientes/delete",
       update: "pacientes/update"
     }),
@@ -197,21 +234,11 @@ export default {
       new: "pacientes/new"
     }),
     enviar() {
-      if (this.isCreating) {
-        delete this.user._id;
-        this.add(this.user).then(res => {
-          if (res.status == "OK") {
-            alert("Paciente adicionado com sucesso.");
-            this.$router.go(-1);
-          }
-        });
-      } else {
-        this.update(this.user).then(res => {
-          if (res.status == "OK") {
-            alert("Paciente atualizado com sucesso!");
-          }
-        });
-      }
+      this.update(this.user.paciente).then(res => {
+        if (res.status == "OK") {
+          alert("Paciente atualizado com sucesso!");
+        }
+      });
     },
     deletePaciente(id) {
       if (confirm("Tem certeza que deseja excluir esse paciente?")) {
@@ -244,5 +271,8 @@ export default {
 <style lang="scss" scoped>
 .exames-list {
   cursor: pointer;
+}
+#inputCpf {
+  cursor: not-allowed;
 }
 </style>

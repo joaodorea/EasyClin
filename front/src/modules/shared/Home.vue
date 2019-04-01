@@ -4,33 +4,34 @@
 
 <script>
 // @ is an alias to /src
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
       list: []
-    }
+    };
   },
   methods: {
     ...mapActions({
-      getList: "consultas/getList"
+      getList: "consultas/getList",
+      getExames: "exames/getList"
     })
   },
   mounted() {
     const vm = this;
-    this.getList().then(
-      (res) => {
-        let list = res.reduce(function(acc, curr) {
-          acc.push({
-            title: curr.name,
-            start: vm.$moment(`${curr.dia} ${curr.hora}`, "DD/MM/YYYY HH:mm").format(),
-            url: `/consultas/${curr._id}`
-          })
-          return acc;
-        },[])
-        generateCallendar(list);
-      }
-    )
+    this.getList().then(res => {
+      let list = res.reduce(function(acc, curr) {
+        acc.push({
+          title: "[con] " + curr.medico.name,
+          start: vm
+            .$moment(`${curr.dia} ${curr.hora}`, "DD/MM/YYYY HH:mm")
+            .format(),
+          url: `/consultas/${curr._id}`
+        });
+        return acc;
+      }, []);
+      generateCallendar(list);
+    });
 
     function generateCallendar(events) {
       vm.$("#callendar").fullCalendar({

@@ -3,38 +3,17 @@
     <div class="col-md-12">
       <h3>Receita</h3>
       <div class="accordion" id="receitas">
-        <div v-for="(rec,i) in receitas" :key="rec._id">
-          <div
-            class="card-header"
-            id="headingOne"
-            data-toggle="collapse"
-            :data-target="'#collapse' + i"
-            aria-expanded="false"
-            :aria-controls="'collapse' + i"
-          >
-            <h5 class="mb-0">
-              <span>{{ rec.diaCadastro | moment("DD MMMM") }}</span>
-            </h5>
-          </div>
-
-          <div
-            :id="'collapse' + i"
-            class="collapse"
-            aria-labelledby="headingOne"
-            data-parent="#receitas"
-          >
-            <div class="card-body">
-              <ul>
-                <li v-for="m in rec.medicamentos" :key="m._id">
-                  <span
-                    :title="`${m.medicamento.nameFab} (${m.medicamento.fab})`"
-                  >{{ m.medicamento.name }}</span>
-                  -
-                  <span class="text-muted">{{ m.descricao }}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div v-for=" rec in receitas" :key="rec._id">
+          <h5 class="mb-3">
+            <span>{{ rec.diaCadastro | moment("DD MMMM") }}</span>
+          </h5>
+          <ul>
+            <li>
+              <span>{{ rec.medicamento.name }}</span>
+              -
+              <span class="text-muted">{{ rec.descricao }}</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -100,9 +79,7 @@ export default {
       medicamento: {}
     };
   },
-  props: [
-    "paciente"
-  ],
+  props: ["paciente"],
   methods: {
     ...mapActions({
       getMedicamentos: "medicamentos/getList",
@@ -110,8 +87,8 @@ export default {
       getList: "receitas/getListReceitas"
     }),
     newMed() {
-      if(!this.medicamento.medicamento) {
-        alert("Selecione um medicamento antes.")
+      if (!this.medicamento.medicamento) {
+        alert("Selecione um medicamento antes.");
         return;
       }
       let isAdded = this.list.find(

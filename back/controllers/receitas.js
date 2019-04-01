@@ -1,17 +1,14 @@
-var ObjectId = require('mongoose').Types.ObjectId;
+var ObjectId = require("mongoose").Types.ObjectId;
 
 const { Receitas } = require("../models/Receitas");
 
 let controller = {};
 controller.list = (req, res) => {
-  Receitas.find({"consulta": new ObjectId(req.params.id)})
-  .populate({
-    path: "medicamentos.medicamento",
-    model: "Medicamentos"
-  })
+  Receitas.find({ consulta: new ObjectId(req.params.id) })
+    .populate("medicamento")
     .then(
       rec => {
-        res.send( rec );
+        res.send(rec);
       },
       err => {
         res.status(400).send(err);
@@ -19,27 +16,35 @@ controller.list = (req, res) => {
     );
 };
 controller.add = (req, res) => {
-  const receita = new Receitas(req.body);
-  receita.save().then(
-    () => {
-      res.send({status: "OK"})
-    },
-    err => {
-      res.status(400).send(err)
-    }
-  )
+  const medicamentos = [...req.body.medicamentos];
+  delete req.body.medicamentos;
+  const body = { ...req.body };
+  let lista = [];
+
+  medicamentos.map(m => {
+    const receita = new Receitas({
+      ...body,
+      medicamento: m.medicamento,
+      descricao: m.descricao
+    });
+    lista.push(receita);
+  });
+
+  Receitas.create(lista).then(() => {
+    res.send({ status: "OK" });
+  }).catch( err => {
+    res.status(400).send(err)
+  });
 };
 controller.detail = (req, res) => {
-  let pac = Receitas.findById(req.params.id, ["-deletedAt"])
+  let pac = Receitas.findById(req.params.id, ["-deletedAt"]);
 
-  Promise.all([pac, cons, exam])
-    .then( value => {
-        let resp = value[0]
-            resp.exames = value[2]
-            resp.consultas = value[1]
-        res.send(resp);
-      }
-    )
+  Promise.all([pac, cons, exam]).then(value => {
+    let resp = value[0];
+    resp.exames = value[2];
+    resp.consultas = value[1];
+    res.send(resp);
+  });
 };
 controller.delete = (req, res) => {
   Receitas.findByIdAndDelete(req.params.id).then(
@@ -47,7 +52,7 @@ controller.delete = (req, res) => {
       res.send({ status: "OK" });
     },
     err => {
-      console.log(err)
+      console.log(err);
       res.status(400).send(err);
     }
   );
@@ -58,7 +63,7 @@ controller.update = (req, res) => {
       res.send({ status: "OK" });
     },
     err => {
-      console.log(err)
+      console.log(err);
       res.status(400).send(err);
     }
   );

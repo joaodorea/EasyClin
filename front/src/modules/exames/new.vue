@@ -5,19 +5,27 @@
         <form @submit.prevent="enviar">
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="inputPaciente">Paciente</label>
-              <select id="inputPaciente" class="form-control" v-model="exame.paciente">
+              <label for="inputPaciente">Paciente *</label>
+              <select required id="inputPaciente" class="form-control" v-model="exame.paciente">
                 <option disabled value>Selecione um paciente</option>
                 <option v-for="p in novo.pacientes" :value="p._id" :key="p._id">{{p.name}}</option>
               </select>
             </div>
             <div class="form-group col-md-3">
-              <label for="inputDia">Dia da consulta</label>
-              <input type="date" name="dia" id="inputDia" class="form-control" v-model="exame.data">
+              <label for="inputDia">Dia da exame *</label>
+              <input
+                required
+                type="date"
+                name="dia"
+                id="inputDia"
+                class="form-control"
+                v-model="exame.data"
+              >
             </div>
             <div class="form-group col-md-3">
-              <label for="inputTime">Horário da consulta</label>
+              <label for="inputTime">Horário da exame *</label>
               <input
+                required
                 type="time"
                 name="inputTime"
                 id="inputTime"
@@ -45,8 +53,18 @@
               <label for="inputorigem">Origem:</label>
               <br>
               <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" :class="exame.origem == 'Emitido' ? 'btn-success' : 'btn-outline-success'" class="btn" @click="exame.origem = 'Emitido'">Emitido</button>
-                <button type="button" :class="exame.origem == 'Recebido' ? 'btn-success' : 'btn-outline-success'" class="btn" @click="exame.origem = 'Recebido'">Recebido</button>
+                <button
+                  type="button"
+                  :class="exame.origem == 'Emitido' ? 'btn-success' : 'btn-outline-success'"
+                  class="btn"
+                  @click="exame.origem = 'Emitido'"
+                >Emitido</button>
+                <button
+                  type="button"
+                  :class="exame.origem == 'Recebido' ? 'btn-success' : 'btn-outline-success'"
+                  class="btn"
+                  @click="exame.origem = 'Recebido'"
+                >Recebido</button>
               </div>
             </div>
             <div class="form-group col-md-6">
@@ -67,10 +85,7 @@ import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
-    return {
-      isEditting: this.$route.name == "NovoExame",
-      isCreating: this.$route.name == "NovoExame"
-    };
+    return {};
   },
   computed: {
     ...mapGetters({
@@ -98,7 +113,7 @@ export default {
       }
     }
   },
-  beforeDestroy() {
+  created() {
     this.nova();
   }
 };

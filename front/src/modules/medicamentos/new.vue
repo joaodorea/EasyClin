@@ -15,33 +15,50 @@
             <router-link to="/medicamentos" tag="span">&times;</router-link>
           </button>
         </div>
-        <div class="modal-body">
-          <form @submit.prevent="create">
+        <form @submit.prevent="create(med)">
+          <div class="modal-body">
             <div class="form-group">
-              <label for="medicamentoNome">Nome do medicamento</label>
+              <label for="medicamentoNome">Nome do medicamento *</label>
               <input
-                v-model="nome"
+                v-model="med.name"
+                required
                 type="text"
                 class="form-control"
                 id="medicamentoNome"
-                aria-describedby="emailHelp"
               >
             </div>
             <div class="form-group">
-              <label for="medicamentoNomeFabrica">Nome de fábrica</label>
-              <input v-model="nomeFab" type="text" class="form-control" id="medicamentoNomeFabrica">
+              <label for="medicamentoNomeFabrica">Nome de fábrica *</label>
+              <input
+                v-model="med.nameFab"
+                type="text"
+                class="form-control"
+                id="medicamentoNomeFabrica"
+                required
+              >
             </div>
             <div class="form-group">
-              <label for="medicamentoFabricante">Fabricante</label>
-              <input v-model="fab" type="text" class="form-control" id="medicamentoFabricante">
+              <label for="medicamentoFabricante">Fabricante *</label>
+              <input
+                v-model="med.fab"
+                required
+                type="text"
+                class="form-control"
+                id="medicamentoFabricante"
+              >
             </div>
-            <button id="submit" type="submit" hidden></button>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <router-link to="/medicamentos" tag="button" type="button" class="btn btn-secondary">Close</router-link>
-          <label for="submit" class="btn btn-primary m-0">Adicionar</label>
-        </div>
+            <small class="text-muted">* Campos obrigatórios</small>
+          </div>
+          <div class="modal-footer">
+            <router-link
+              to="/medicamentos"
+              tag="button"
+              type="button"
+              class="btn btn-secondary"
+            >Close</router-link>
+            <button type="submit" class="btn btn-primary m-0">Adicionar</button>
+          </div>
+        </form>
       </div>
     </div>
     <router-link to="/medicamentos" tag="span" class="bg-black"></router-link>
@@ -54,22 +71,32 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
-      nome: "",
-      fab: "",
-      nomeFab: ""
+      med: {
+        name: "",
+        fab: "",
+        nameFab: ""
+      }
     };
   },
   methods: {
-    create() {
-      this.send({
-        name: this.nome,
-        fab: this.fab,
-        nameFab: this.nomeFab
-      });
+    create(medi) {
+      this.send({ ...medi })
+        .then(res => {
+          if (res._id) {
+            alert("Medicamento adicionado com sucesso!");
+            this.$router.go(-1);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     ...mapActions({
       send: "medicamentos/create"
-    })
+    }),
+    triggerSubmit() {
+      document.getElementById("submitButton").click();
+    }
   }
 };
 </script>

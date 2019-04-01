@@ -18,7 +18,7 @@
         <div class="modal-body">
           <form @submit.prevent="save">
             <div class="form-group">
-              <label for="medicamentoNome">Nome do medicamento</label>
+              <label for="medicamentoNome">Nome do medicamento *</label>
               <input
                 v-model="medicamento.name"
                 type="text"
@@ -28,7 +28,7 @@
               >
             </div>
             <div class="form-group">
-              <label for="medicamentoNomeFabrica">Nome de fábrica</label>
+              <label for="medicamentoNomeFabrica">Nome de fábrica *</label>
               <input
                 v-model="medicamento.nameFab"
                 type="text"
@@ -37,7 +37,7 @@
               >
             </div>
             <div class="form-group">
-              <label for="medicamentoFabricante">Fabricante</label>
+              <label for="medicamentoFabricante">Fabricante *</label>
               <input
                 v-model="medicamento.fab"
                 type="text"
@@ -46,6 +46,7 @@
               >
             </div>
             <button id="submit" type="submit" hidden></button>
+            <small class="text-muted">* Campos obrigatórios</small>
           </form>
         </div>
         <div class="modal-footer">

@@ -38,7 +38,11 @@ const UserSchema = new mongoose.Schema({
   ],
   profile: {
     type: String,
-    default: 'Editor'
+    default: "Editor",
+    required: true
+  },
+  area: {
+    type: String
   },
   schedule: {
     type: Object,
@@ -46,8 +50,8 @@ const UserSchema = new mongoose.Schema({
     required: false
   },
   deletedAt: {
-      type: String,
-      default: null
+    type: String,
+    default: null
   }
 });
 
@@ -78,14 +82,14 @@ UserSchema.methods.generateAuthToken = function() {
 };
 
 UserSchema.methods.removeToken = function(token) {
-    var user = this;
+  var user = this;
 
-    return user.update({
-        $pull: {
-            tokens: { token }
-        }
-    })
-}
+  return user.update({
+    $pull: {
+      tokens: { token }
+    }
+  });
+};
 
 UserSchema.statics.findByToken = function(token) {
   var User = this;
@@ -109,7 +113,9 @@ UserSchema.statics.findByCredentials = function(email, password) {
   return User.findOne({ email })
     .then(user => {
       if (!user) {
-        return Promise.reject("Verifique se os dados preenchidos estão corretos.");
+        return Promise.reject(
+          "Verifique se os dados preenchidos estão corretos."
+        );
       } else {
         return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, function(err, res) {
@@ -123,7 +129,7 @@ UserSchema.statics.findByCredentials = function(email, password) {
       }
     })
     .catch(err => {
-      return Promise.reject({message: "Não autorizado"});
+      return Promise.reject({ message: "Não autorizado" });
     });
 };
 

@@ -17,15 +17,15 @@
         <li class="nav-item" v-if="isAuth">
           <router-link active-class="active" class="nav-link" to="/" exact>Home</router-link>
         </li>
-        <li class="nav-item" v-if="isAuth">
+        <li class="nav-item" v-if="isAuth && isAdmin">
           <router-link active-class="active" class="nav-link" to="/medicamentos">Medicamentos</router-link>
         </li>
         <li class="nav-item" v-if="isAuth">
           <router-link active-class="active" class="nav-link" to="/pacientes">Pacientes</router-link>
         </li>
-        <!-- <li class="nav-item" v-if="isAuth">
-        <router-link active-class="active" class="nav-link" to="/funcionarios">Funcionários</router-link>
-        </li>-->
+        <li class="nav-item" v-if="isAuth && isAdmin">
+          <router-link active-class="active" class="nav-link" to="/funcionarios">Funcionários</router-link>
+        </li>
         <li class="nav-item" v-if="isAuth">
           <router-link active-class="active" class="nav-link" to="/exames">Exames</router-link>
         </li>
@@ -37,7 +37,15 @@
         </li>
         <li class="nav-item" v-if="isAuth">
           <div class="dropdown">
-            <a class="dropdown-toggle nav-link" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a
+              class="dropdown-toggle nav-link"
+              href="#"
+              role="button"
+              id="dropdownMenuLink"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               <i class="fa fa-user"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
@@ -59,8 +67,12 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      isAuth: "account/isAuth"
-    })
+      isAuth: "account/isAuth",
+      user: "account/user"
+    }),
+    isAdmin() {
+      if (this.user) return this.user.profile == "Administrador";
+    }
   },
   methods: {
     openSidebar() {

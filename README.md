@@ -1,2 +1,1 @@
-# EasyClin
-Medical manager
+# medical

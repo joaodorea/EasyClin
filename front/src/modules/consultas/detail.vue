@@ -54,13 +54,14 @@
               type="button"
               class="btn btn-outline-danger"
               @click="confirmDelete(item._id)"
+              v-if="user.profile !== 'Médico'"
             >Desmarcar</button>
             <button type="submit" class="btn btn-primary float-right">Salvar</button>
           </div>
         </form>
       </div>
       <div class="col-md-4">
-        <receitas :paciente="item.paciente"/>
+        <receitas v-if="user.profile !== 'Editor'" :paciente="item.paciente"/>
       </div>
     </div>
   </div>
@@ -91,16 +92,19 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: "consultas/item"
+      item: "consultas/item",
+      user: "account/user"
     }),
     formatedDate: {
       get() {
         const dia = this.item.dia;
         return this.$moment(dia, "DD/MM/YYYY").format("MM/DD/YYYY");
       },
-       set(newValue) {
-         this.item.dia = this.$moment(newValue, "MM/DD/YYYY").format("DD/MM/YYYY");
-       }
+      set(newValue) {
+        this.item.dia = this.$moment(newValue, "MM/DD/YYYY").format(
+          "DD/MM/YYYY"
+        );
+      }
     }
   },
   methods: {
